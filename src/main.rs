@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-enum Lang {
+enum Commands {
     SetVar(String, Value),
     GetVar(String)
 }
@@ -12,7 +12,12 @@ enum Value {
 }
 
 #[derive(Debug)]
-enum EvalError{
+enum ParseError{
+    MismatchNumParams,
+}
+
+#[derive(Debug)]
+enum EvaluationError {
     MissingVariable(String),
 }
 struct Evaluator {
@@ -27,17 +32,17 @@ impl Evaluator {
         }
     }
 
-    fn evaluate(&mut self, commands: &[Lang]) -> Result<Value, EvalError> {
+    fn evaluate(&mut self, commands: &[Commands]) -> Result<Value, EvaluationError> {
         let mut output = Ok(Value::Nothing);
         for command in commands{
             match command {
-                Lang::SetVar(name, value) => {
+                Commands::SetVar(name, value) => {
                     self.variables.insert(name.into(), value.clone());
                 },
-                Lang::GetVar(name) => {
+                Commands::GetVar(name) => {
                     match self.variables.get(name){
                         Some(value) => output = Ok(value.clone()),
-                        None => return Err(EvalError::MissingVariable(name.into())),
+                        None => return Err(EvaluationError::MissingVariable(name.into())),
                     }
                 }
             }
@@ -47,13 +52,48 @@ impl Evaluator {
     }
 }
 
+fn parse_set(input: &[&str]) -> Result<Commands>, ParseError> {
+    if input.len() != 3 {
+        return Err(ParseError::MismatchNumParams);
+    }
+
+    let var_name = parse_var_name(input[1])?;
+    let value = parse_value(input[2])?;
+}
+
+fn parse_get(input: &[&str]) -> Result<Commands, ParseError> {
+
+}
+
+fn parse(input: &str) -> Result<(), ParseError> {
+
+    //Set a 100
+    //get x
+
+    for line in input.lines() {
+        let command: Vec<_> = line.split_whitespace().collect();
+
+
+        match command.get(0) {
+            Some(x) if  x == "set" => {
+                parse_set(&command);
+            }
+            Some(x)if x == "get" => {
+                parse_get(&command);
+            }
+        }
+
+    }
+    Ok(())
+}
+
 
 #[test]
 
-fn test1() -> Result<(), EvalError> {
+fn test1() -> Result<(), EvaluationError> {
     let commands = vec![
-        Lang::SetVar("x".into(), Value::Int(1)),
-        Lang::GetVar("x".into()),
+        Commands::SetVar("x".into(), Value::Int(1)),
+        Commands::GetVar("x".into()),
     ];
 
     let mut evaluator = Evaluator::new();
