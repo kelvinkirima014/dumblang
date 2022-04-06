@@ -60,7 +60,7 @@ fn test1() -> Result<(), EvalError> {
 
     let result = evaluator.evaluate(&commands)?;
 
-    assert_eq!(result, Value::Int(2));
+    assert_eq!(result, Value::Int(1));
 
     Ok(())
 }
