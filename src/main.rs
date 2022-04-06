@@ -1,23 +1,68 @@
+use std::collections::HashMap;
+
 enum Lang {
     SetVar(String, Value),
     GetVar(String)
 }
 
+#[derive(Clone, PartialEq, Debug)]
 enum Value {
-    int(i64),
+    Int(i64),
+    Nothing,
 }
 
-fn evaluate(commands: &[Lang]) {}
+#[derive(Debug)]
+enum EvalError{
+    MissingVariable(String),
+}
+struct Evaluator {
+    variables: HashMap<String, Value>,
+}
+
+impl Evaluator {
+
+    fn new() -> Evaluator {
+        Self {
+            variables: HashMap::new(),
+        }
+    }
+
+    fn evaluate(&mut self, commands: &[Lang]) -> Result<Value, EvalError> {
+        let mut output = Ok(Value::Nothing);
+        for command in commands{
+            match command {
+                Lang::SetVar(name, value) => {
+                    self.variables.insert(name.into(), value.clone());
+                },
+                Lang::GetVar(name) => {
+                    match self.variables.get(name){
+                        Some(value) => output = Ok(value.clone()),
+                        None => return Err(EvalError::MissingVariable(name.into())),
+                    }
+                }
+            }
+
+        }
+        output
+    }
+}
+
 
 #[test]
 
-fn test1() {
+fn test1() -> Result<(), EvalError> {
     let commands = vec![
-        Lang::SetVar("x".to_string(), Value::int(1)),
-        Lang::GetVar("x".to_string()),
+        Lang::SetVar("x".into(), Value::Int(1)),
+        Lang::GetVar("x".into()),
     ];
 
-    let result = evaluate(&commands);
+    let mut evaluator = Evaluator::new();
+
+    let result = evaluator.evaluate(&commands)?;
+
+    assert_eq!(result, Value::Int(2));
+
+    Ok(())
 }
 
 fn main() {
