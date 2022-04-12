@@ -14,7 +14,7 @@ enum Value {
 #[derive(Debug)]
 enum ParseError{
     MismatchNumParams,
-
+    MismatchType
 }
 
 #[derive(Debug)]
@@ -52,10 +52,28 @@ impl Evaluator {
     }
 }
 
+fn parse_var_name(var_name: &str) -> Result<String, ParseError>{
+    Ok(var_name.into())
+}
+
+fn parse_value(val: &str) -> Result<String, ParseError>{
+    let result = val.parse::<i64>();
+
+    match result {
+        Ok(x) => Ok(Value::Int(x)),
+        _=> Err(ParseError::MismatchType)
+    }
+}
+
 fn parse_set(input: &[str]) -> Result<Commands, ParseError>{
     if input.len() !=3 {
         return Err(ParseError::MismatchNumParams);
     }
+
+    let var_name = parse_var_name(input[1])?;
+    let value = parse_value(input[2])?;
+
+    Ok(Commands::SetVar(var_name, value))
 }
 
 fn parse_get(input: &[str]) -> Result<Commands, ParseError>{
