@@ -14,6 +14,7 @@ enum Value {
 #[derive(Debug)]
 enum ParseError{
     MismatchNumParams,
+
 }
 
 #[derive(Debug)]
@@ -51,7 +52,35 @@ impl Evaluator {
     }
 }
 
+fn parse_set(input: &[str]) -> Result<Commands, ParseError>{
+    if input.len() !=3 {
+        return Err(ParseError::MismatchNumParams);
+    }
+}
 
+fn parse_get(input: &[str]) -> Result<Commands, ParseError>{
+    todo!()
+}
+
+
+
+fn parse(input: &str) -> Result<Vec<Commands>, ParseError>{
+
+
+
+    for line in input.lines() {
+        let command = line.split_ascii_whitespace().collect();
+
+        match command.get(0) {
+            Some(x) if *x == "set" => {
+                parse_set(&command);
+            }
+            Some(x) if *x == "get" => {
+                parse_get(&command);
+            }
+        }
+    }
+}
 
 #[test]
 
