@@ -27,11 +27,10 @@ struct Evaluator {
 impl Evaluator {
 
     fn new() -> Evaluator {
-        Self {
+        Evaluator {
             variables: HashMap::new(),
         }
     }
-
     fn evaluate(&mut self, commands: &[Commands]) -> Result<Value, EvaluationError> {
         let mut output = Ok(Value::Nothing);
         for command in commands{
@@ -52,40 +51,6 @@ impl Evaluator {
     }
 }
 
-fn parse_set(input: &[&str]) -> Result<Commands>, ParseError> {
-    if input.len() != 3 {
-        return Err(ParseError::MismatchNumParams);
-    }
-
-    let var_name = parse_var_name(input[1])?;
-    let value = parse_value(input[2])?;
-}
-
-fn parse_get(input: &[&str]) -> Result<Commands, ParseError> {
-
-}
-
-fn parse(input: &str) -> Result<(), ParseError> {
-
-    //Set a 100
-    //get x
-
-    for line in input.lines() {
-        let command: Vec<_> = line.split_whitespace().collect();
-
-
-        match command.get(0) {
-            Some(x) if  x == "set" => {
-                parse_set(&command);
-            }
-            Some(x)if x == "get" => {
-                parse_get(&command);
-            }
-        }
-
-    }
-    Ok(())
-}
 
 
 #[test]
